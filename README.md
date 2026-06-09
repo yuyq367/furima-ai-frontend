@@ -1,0 +1,1 @@
+# furima-ai-frontend
