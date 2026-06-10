@@ -16,6 +16,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [backendMessage, setBackendMessage] = useState("");
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -101,6 +102,19 @@ function App() {
     }
   };
 
+  const handleShowProductDetail = async (productId) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/products/${productId}`,
+      );
+      const data = await response.json();
+
+      setSelectedProduct(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>Furima AI</h1>
@@ -174,8 +188,33 @@ function App() {
               <p>カテゴリ: {product.category}</p>
               <p>状態: {product.condition_label}</p>
               <p>販売状況: {product.status}</p>
+
+              <button onClick={() => handleShowProductDetail(product.id)}>
+                詳細を見る
+              </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {selectedProduct && (
+        <div
+          style={{
+            border: "2px solid #333",
+            padding: "16px",
+            marginTop: "24px",
+            borderRadius: "8px",
+          }}
+        >
+          <h2>商品詳細</h2>
+          <h3>{selectedProduct.title}</h3>
+          <p>{selectedProduct.description}</p>
+          <p>{selectedProduct.price}円</p>
+          <p>カテゴリ: {selectedProduct.category}</p>
+          <p>状態: {selectedProduct.condition_label}</p>
+          <p>販売状況: {selectedProduct.status}</p>
+          <p>出品者: {selectedProduct.seller_username}</p>
+          <p>作成日: {selectedProduct.created_at}</p>
         </div>
       )}
     </div>
