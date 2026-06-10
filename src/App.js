@@ -14,6 +14,7 @@ function App() {
 
   const [loginUser, setLoginUser] = useState(null);
   const [message, setMessage] = useState("");
+  const [backendMessage, setBackendMessage] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -46,10 +47,42 @@ function App() {
   const handleLogout = async () => {
     try {
       setMessage("");
+      setBackendMessage("");
       await signOut(auth);
       setMessage("ログアウトしました");
     } catch (error) {
       setMessage(error.message);
+    }
+  };
+
+  const handleCheckBackendAuth = async () => {
+    try {
+      setBackendMessage("");
+
+      if (!loginUser) {
+        setBackendMessage("ログインしていません");
+        return;
+      }
+
+      const idToken = await loginUser.getIdToken();
+
+      const response = await fetch("http://127.0.0.1:8000/auth/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBackendMessage(JSON.stringify(data, null, 2));
+        return;
+      }
+
+      setBackendMessage(JSON.stringify(data, null, 2));
+    } catch (error) {
+      setBackendMessage(error.message);
     }
   };
 
@@ -63,6 +96,8 @@ function App() {
           <p>ログイン中です</p>
           <p>Email: {loginUser.email}</p>
           <p>Firebase UID: {loginUser.uid}</p>
+
+          <button onClick={handleCheckBackendAuth}>バックエンド認証確認</button>
 
           <button onClick={handleLogout}>ログアウト</button>
         </div>
@@ -92,6 +127,13 @@ function App() {
       )}
 
       {message && <p>{message}</p>}
+
+      {backendMessage && (
+        <div>
+          <h3>Backend Response</h3>
+          <pre>{backendMessage}</pre>
+        </div>
+      )}
     </div>
   );
 }
