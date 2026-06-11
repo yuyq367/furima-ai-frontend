@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -26,6 +26,12 @@ function App() {
   const [newProductImageUrl, setNewProductImageUrl] = useState("");
   const [myProducts, setMyProducts] = useState([]);
   const [myPurchases, setMyPurchases] = useState([]);
+
+  const location = useLocation();
+
+  const isHomePage = location.pathname === "/";
+  const isSellPage = location.pathname === "/sell";
+  const isMyPage = location.pathname === "/mypage";
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -298,117 +304,65 @@ function App() {
           <p>Firebase UID: {loginUser.uid}</p>
 
           <button onClick={handleCheckBackendAuth}>バックエンド認証確認</button>
-          <button onClick={handleGetMyPage}>マイページ情報を取得</button>
           <button onClick={handleLogout}>ログアウト</button>
-          <hr />
 
-          <h2>商品を出品する</h2>
+          {isMyPage && (
+            <>
+              <hr />
 
-          <div>
-            <input
-              type="text"
-              placeholder="商品名"
-              value={newProductTitle}
-              onChange={(event) => setNewProductTitle(event.target.value)}
-            />
-          </div>
+              <h2>マイページ</h2>
 
-          <div>
-            <textarea
-              placeholder="商品説明"
-              value={newProductDescription}
-              onChange={(event) => setNewProductDescription(event.target.value)}
-            />
-          </div>
+              <button onClick={handleGetMyPage}>マイページ情報を取得</button>
 
-          <div>
-            <input
-              type="number"
-              placeholder="価格"
-              value={newProductPrice}
-              onChange={(event) => setNewProductPrice(event.target.value)}
-            />
-          </div>
+              <h3>自分の出品一覧</h3>
 
-          <div>
-            <input
-              type="text"
-              placeholder="カテゴリ"
-              value={newProductCategory}
-              onChange={(event) => setNewProductCategory(event.target.value)}
-            />
-          </div>
-
-          <div>
-            <input
-              type="text"
-              placeholder="商品の状態"
-              value={newProductCondition}
-              onChange={(event) => setNewProductCondition(event.target.value)}
-            />
-          </div>
-
-          <div>
-            <input
-              type="text"
-              placeholder="画像URL（任意）"
-              value={newProductImageUrl}
-              onChange={(event) => setNewProductImageUrl(event.target.value)}
-            />
-          </div>
-
-          <button onClick={handleCreateProduct}>出品する</button>
-          <hr />
-
-          <h2>マイページ</h2>
-
-          <h3>自分の出品一覧</h3>
-
-          {myProducts.length === 0 ? (
-            <p>出品した商品はありません</p>
-          ) : (
-            <div>
-              {myProducts.map((product) => (
-                <div
-                  key={product.id}
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "12px",
-                    marginBottom: "12px",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <h4>{product.title}</h4>
-                  <p>{product.price}円</p>
-                  <p>販売状況: {product.status}</p>
+              {myProducts.length === 0 ? (
+                <p>出品した商品はありません</p>
+              ) : (
+                <div>
+                  {myProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "12px",
+                        marginBottom: "12px",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <h4>{product.title}</h4>
+                      <p>{product.price}円</p>
+                      <p>販売状況: {product.status}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              )}
 
-          <h3>自分の購入一覧</h3>
+              <h3>自分の購入一覧</h3>
 
-          {myPurchases.length === 0 ? (
-            <p>購入した商品はありません</p>
-          ) : (
-            <div>
-              {myPurchases.map((purchase) => (
-                <div
-                  key={purchase.purchase_id}
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "12px",
-                    marginBottom: "12px",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <h4>{purchase.title}</h4>
-                  <p>{purchase.price}円</p>
-                  <p>出品者: {purchase.seller_username}</p>
-                  <p>購入日時: {purchase.purchased_at}</p>
+              {myPurchases.length === 0 ? (
+                <p>購入した商品はありません</p>
+              ) : (
+                <div>
+                  {myPurchases.map((purchase) => (
+                    <div
+                      key={purchase.purchase_id}
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "12px",
+                        marginBottom: "12px",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <h4>{purchase.title}</h4>
+                      <p>{purchase.price}円</p>
+                      <p>出品者: {purchase.seller_username}</p>
+                      <p>購入日時: {purchase.purchased_at}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       ) : (
@@ -445,66 +399,72 @@ function App() {
         </div>
       )}
 
-      <hr />
+      {isHomePage && (
+        <>
+          <hr />
 
-      <h2>商品一覧</h2>
+          <h2>商品一覧</h2>
 
-      {products.length === 0 ? (
-        <p>商品がありません</p>
-      ) : (
-        <div>
-          {products.map((product) => (
+          {products.length === 0 ? (
+            <p>商品がありません</p>
+          ) : (
+            <div>
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "12px",
+                    marginBottom: "12px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h3>{product.title}</h3>
+                  <p>{product.description}</p>
+                  <p>{product.price}円</p>
+                  <p>カテゴリ: {product.category}</p>
+                  <p>状態: {product.condition_label}</p>
+                  <p>販売状況: {product.status}</p>
+
+                  <button onClick={() => handleShowProductDetail(product.id)}>
+                    詳細を見る
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {selectedProduct && (
             <div
-              key={product.id}
               style={{
-                border: "1px solid #ddd",
-                padding: "12px",
-                marginBottom: "12px",
+                border: "2px solid #333",
+                padding: "16px",
+                marginTop: "24px",
                 borderRadius: "8px",
               }}
             >
-              <h3>{product.title}</h3>
-              <p>{product.description}</p>
-              <p>{product.price}円</p>
-              <p>カテゴリ: {product.category}</p>
-              <p>状態: {product.condition_label}</p>
-              <p>販売状況: {product.status}</p>
+              <h2>商品詳細</h2>
+              <h3>{selectedProduct.title}</h3>
+              <p>{selectedProduct.description}</p>
+              <p>{selectedProduct.price}円</p>
+              <p>カテゴリ: {selectedProduct.category}</p>
+              <p>状態: {selectedProduct.condition_label}</p>
+              <p>販売状況: {selectedProduct.status}</p>
+              <p>出品者: {selectedProduct.seller_username}</p>
+              <p>作成日: {selectedProduct.created_at}</p>
 
-              <button onClick={() => handleShowProductDetail(product.id)}>
-                詳細を見る
-              </button>
+              {selectedProduct.status === "available" ? (
+                <button
+                  onClick={() => handlePurchaseProduct(selectedProduct.id)}
+                >
+                  購入する
+                </button>
+              ) : (
+                <p>この商品は売り切れです</p>
+              )}
             </div>
-          ))}
-        </div>
-      )}
-
-      {selectedProduct && (
-        <div
-          style={{
-            border: "2px solid #333",
-            padding: "16px",
-            marginTop: "24px",
-            borderRadius: "8px",
-          }}
-        >
-          <h2>商品詳細</h2>
-          <h3>{selectedProduct.title}</h3>
-          <p>{selectedProduct.description}</p>
-          <p>{selectedProduct.price}円</p>
-          <p>カテゴリ: {selectedProduct.category}</p>
-          <p>状態: {selectedProduct.condition_label}</p>
-          <p>販売状況: {selectedProduct.status}</p>
-          <p>出品者: {selectedProduct.seller_username}</p>
-          <p>作成日: {selectedProduct.created_at}</p>
-
-          {selectedProduct.status === "available" ? (
-            <button onClick={() => handlePurchaseProduct(selectedProduct.id)}>
-              購入する
-            </button>
-          ) : (
-            <p>この商品は売り切れです</p>
           )}
-        </div>
+        </>
       )}
     </div>
   );
