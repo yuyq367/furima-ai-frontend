@@ -14,6 +14,7 @@ function App() {
   const [password, setPassword] = useState("");
 
   const [loginUser, setLoginUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [message, setMessage] = useState("");
   const [backendMessage, setBackendMessage] = useState("");
   const [products, setProducts] = useState([]);
@@ -103,6 +104,7 @@ function App() {
     try {
       setMessage("");
       setBackendMessage("");
+      setCurrentUser(null);
       setSelectedProduct(null);
       setMyProducts([]);
       setMyPurchases([]);
@@ -121,6 +123,7 @@ function App() {
 
       if (!loginUser) {
         setBackendMessage("ログインしていません");
+        setCurrentUser(null);
         return;
       }
 
@@ -137,14 +140,51 @@ function App() {
 
       if (!response.ok) {
         setBackendMessage(JSON.stringify(data, null, 2));
+        setCurrentUser(null);
         return;
       }
 
+      setCurrentUser(data);
       setBackendMessage(JSON.stringify(data, null, 2));
     } catch (error) {
+      setCurrentUser(null);
       setBackendMessage(error.message);
     }
   };
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!loginUser) {
+        setCurrentUser(null);
+        return;
+      }
+
+      try {
+        const idToken = await loginUser.getIdToken();
+
+        const response = await fetch("http://127.0.0.1:8000/auth/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setCurrentUser(null);
+          return;
+        }
+
+        setCurrentUser(data);
+      } catch (error) {
+        console.error(error);
+        setCurrentUser(null);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [loginUser]);
 
   const handleCreateProduct = async () => {
     try {
@@ -619,12 +659,18 @@ function App() {
           <p>出品者: {selectedProduct.seller_username}</p>
           <p>作成日: {selectedProduct.created_at}</p>
 
-          {selectedProduct.status === "available" ? (
+          {selectedProduct.status !== "available" ? (
+            <p>この商品は売り切れです</p>
+          ) : !loginUser ? (
+            <p>購入するにはログインしてください</p>
+          ) : !currentUser ? (
+            <p>ログイン情報を確認中です</p>
+          ) : selectedProduct.seller_id === currentUser.id ? (
+            <p>これは自分が出品した商品です</p>
+          ) : (
             <button onClick={() => handlePurchaseProduct(selectedProduct.id)}>
               購入する
             </button>
-          ) : (
-            <p>この商品は売り切れです</p>
           )}
 
           <div style={{ marginTop: "12px" }}>
