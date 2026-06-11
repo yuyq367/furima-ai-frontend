@@ -23,6 +23,8 @@ function App() {
   const [newProductCategory, setNewProductCategory] = useState("");
   const [newProductCondition, setNewProductCondition] = useState("");
   const [newProductImageUrl, setNewProductImageUrl] = useState("");
+  const [myProducts, setMyProducts] = useState([]);
+  const [myPurchases, setMyPurchases] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -216,6 +218,60 @@ function App() {
     }
   };
 
+  const handleGetMyPage = async () => {
+    try {
+      setMessage("");
+      setBackendMessage("");
+
+      if (!loginUser) {
+        setMessage("ログインしてください");
+        return;
+      }
+
+      const idToken = await loginUser.getIdToken();
+
+      const productsResponse = await fetch(
+        "http://127.0.0.1:8000/users/me/products",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        },
+      );
+
+      const productsData = await productsResponse.json();
+
+      const purchasesResponse = await fetch(
+        "http://127.0.0.1:8000/users/me/purchases",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        },
+      );
+
+      const purchasesData = await purchasesResponse.json();
+
+      if (!productsResponse.ok) {
+        setBackendMessage(JSON.stringify(productsData, null, 2));
+        return;
+      }
+
+      if (!purchasesResponse.ok) {
+        setBackendMessage(JSON.stringify(purchasesData, null, 2));
+        return;
+      }
+
+      setMyProducts(productsData);
+      setMyPurchases(purchasesData);
+      setMessage("マイページ情報を取得しました");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>Furima AI</h1>
@@ -228,7 +284,7 @@ function App() {
           <p>Firebase UID: {loginUser.uid}</p>
 
           <button onClick={handleCheckBackendAuth}>バックエンド認証確認</button>
-
+          <button onClick={handleGetMyPage}>マイページ情報を取得</button>
           <button onClick={handleLogout}>ログアウト</button>
           <hr />
 
@@ -288,6 +344,58 @@ function App() {
           </div>
 
           <button onClick={handleCreateProduct}>出品する</button>
+          <hr />
+
+          <h2>マイページ</h2>
+
+          <h3>自分の出品一覧</h3>
+
+          {myProducts.length === 0 ? (
+            <p>出品した商品はありません</p>
+          ) : (
+            <div>
+              {myProducts.map((product) => (
+                <div
+                  key={product.id}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "12px",
+                    marginBottom: "12px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h4>{product.title}</h4>
+                  <p>{product.price}円</p>
+                  <p>販売状況: {product.status}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <h3>自分の購入一覧</h3>
+
+          {myPurchases.length === 0 ? (
+            <p>購入した商品はありません</p>
+          ) : (
+            <div>
+              {myPurchases.map((purchase) => (
+                <div
+                  key={purchase.purchase_id}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "12px",
+                    marginBottom: "12px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h4>{purchase.title}</h4>
+                  <p>{purchase.price}円</p>
+                  <p>出品者: {purchase.seller_username}</p>
+                  <p>購入日時: {purchase.purchased_at}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div>
