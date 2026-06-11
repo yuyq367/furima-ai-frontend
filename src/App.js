@@ -29,9 +29,13 @@ function App() {
 
   const location = useLocation();
 
+  const productDetailMatch = location.pathname.match(/^\/products\/(\d+)$/);
+  const productDetailId = productDetailMatch ? productDetailMatch[1] : null;
+
   const isHomePage = location.pathname === "/";
   const isSellPage = location.pathname === "/sell";
   const isMyPage = location.pathname === "/mypage";
+  const isProductDetailPage = productDetailId !== null;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -54,6 +58,26 @@ function App() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    const fetchProductDetail = async () => {
+      if (!productDetailId) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/products/${productDetailId}`,
+        );
+        const data = await response.json();
+        setSelectedProduct(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProductDetail();
+  }, [productDetailId]);
 
   const handleSignup = async () => {
     try {
@@ -426,45 +450,45 @@ function App() {
                   <p>状態: {product.condition_label}</p>
                   <p>販売状況: {product.status}</p>
 
-                  <button onClick={() => handleShowProductDetail(product.id)}>
-                    詳細を見る
-                  </button>
+                  <Link to={`/products/${product.id}`}>詳細を見る</Link>
                 </div>
               ))}
             </div>
           )}
-
-          {selectedProduct && (
-            <div
-              style={{
-                border: "2px solid #333",
-                padding: "16px",
-                marginTop: "24px",
-                borderRadius: "8px",
-              }}
-            >
-              <h2>商品詳細</h2>
-              <h3>{selectedProduct.title}</h3>
-              <p>{selectedProduct.description}</p>
-              <p>{selectedProduct.price}円</p>
-              <p>カテゴリ: {selectedProduct.category}</p>
-              <p>状態: {selectedProduct.condition_label}</p>
-              <p>販売状況: {selectedProduct.status}</p>
-              <p>出品者: {selectedProduct.seller_username}</p>
-              <p>作成日: {selectedProduct.created_at}</p>
-
-              {selectedProduct.status === "available" ? (
-                <button
-                  onClick={() => handlePurchaseProduct(selectedProduct.id)}
-                >
-                  購入する
-                </button>
-              ) : (
-                <p>この商品は売り切れです</p>
-              )}
-            </div>
-          )}
         </>
+      )}
+
+      {isProductDetailPage && selectedProduct && (
+        <div
+          style={{
+            border: "2px solid #333",
+            padding: "16px",
+            marginTop: "24px",
+            borderRadius: "8px",
+          }}
+        >
+          <h2>商品詳細</h2>
+          <h3>{selectedProduct.title}</h3>
+          <p>{selectedProduct.description}</p>
+          <p>{selectedProduct.price}円</p>
+          <p>カテゴリ: {selectedProduct.category}</p>
+          <p>状態: {selectedProduct.condition_label}</p>
+          <p>販売状況: {selectedProduct.status}</p>
+          <p>出品者: {selectedProduct.seller_username}</p>
+          <p>作成日: {selectedProduct.created_at}</p>
+
+          {selectedProduct.status === "available" ? (
+            <button onClick={() => handlePurchaseProduct(selectedProduct.id)}>
+              購入する
+            </button>
+          ) : (
+            <p>この商品は売り切れです</p>
+          )}
+
+          <div style={{ marginTop: "12px" }}>
+            <Link to="/">商品一覧に戻る</Link>
+          </div>
+        </div>
       )}
     </div>
   );
