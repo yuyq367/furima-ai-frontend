@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -275,6 +276,19 @@ function App() {
   return (
     <div style={{ padding: "40px" }}>
       <h1>Furima AI</h1>
+
+      <nav style={{ marginBottom: "20px" }}>
+        <Link to="/" style={{ marginRight: "12px" }}>
+          ホーム
+        </Link>
+        <Link to="/sell" style={{ marginRight: "12px" }}>
+          出品
+        </Link>
+        <Link to="/mypage" style={{ marginRight: "12px" }}>
+          マイページ
+        </Link>
+      </nav>
+
       <h2>Firebase Authentication Test</h2>
 
       {loginUser ? (
