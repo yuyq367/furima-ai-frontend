@@ -156,6 +156,36 @@ function App() {
         return;
       }
 
+      if (!newProductTitle) {
+        setMessage("商品名を入力してください");
+        return;
+      }
+
+      if (!newProductDescription) {
+        setMessage("商品説明を入力してください");
+        return;
+      }
+
+      if (!newProductPrice) {
+        setMessage("価格を入力してください");
+        return;
+      }
+
+      if (Number(newProductPrice) <= 0) {
+        setMessage("価格は1円以上で入力してください");
+        return;
+      }
+
+      if (!newProductCategory) {
+        setMessage("カテゴリを選択してください");
+        return;
+      }
+
+      if (!newProductCondition) {
+        setMessage("商品の状態を選択してください");
+        return;
+      }
+
       const idToken = await loginUser.getIdToken();
 
       const response = await fetch("http://127.0.0.1:8000/products", {
