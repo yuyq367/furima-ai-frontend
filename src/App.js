@@ -172,6 +172,50 @@ function App() {
     }
   };
 
+  const handlePurchaseProduct = async (productId) => {
+    try {
+      setMessage("");
+      setBackendMessage("");
+
+      if (!loginUser) {
+        setMessage("ログインしてください");
+        return;
+      }
+
+      const idToken = await loginUser.getIdToken();
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/products/${productId}/purchase`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBackendMessage(JSON.stringify(data, null, 2));
+        return;
+      }
+
+      setBackendMessage(JSON.stringify(data, null, 2));
+      setMessage("商品を購入しました");
+
+      await fetchProducts();
+
+      const detailResponse = await fetch(
+        `http://127.0.0.1:8000/products/${productId}`,
+      );
+      const detailData = await detailResponse.json();
+      setSelectedProduct(detailData);
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>Furima AI</h1>
@@ -330,6 +374,14 @@ function App() {
           <p>販売状況: {selectedProduct.status}</p>
           <p>出品者: {selectedProduct.seller_username}</p>
           <p>作成日: {selectedProduct.created_at}</p>
+
+          {selectedProduct.status === "available" ? (
+            <button onClick={() => handlePurchaseProduct(selectedProduct.id)}>
+              購入する
+            </button>
+          ) : (
+            <p>この商品は売り切れです</p>
+          )}
         </div>
       )}
     </div>
