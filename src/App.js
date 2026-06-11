@@ -365,25 +365,37 @@ function App() {
               </div>
 
               <div>
-                <input
-                  type="text"
-                  placeholder="カテゴリ"
+                <select
                   value={newProductCategory}
                   onChange={(event) =>
                     setNewProductCategory(event.target.value)
                   }
-                />
+                >
+                  <option value="">カテゴリを選択</option>
+                  <option value="衣類">衣類</option>
+                  <option value="本">本</option>
+                  <option value="家電">家電</option>
+                  <option value="コスメ">コスメ</option>
+                  <option value="その他">その他</option>
+                </select>
               </div>
 
               <div>
-                <input
-                  type="text"
-                  placeholder="商品の状態"
+                <select
                   value={newProductCondition}
                   onChange={(event) =>
                     setNewProductCondition(event.target.value)
                   }
-                />
+                >
+                  <option value="">商品の状態を選択</option>
+                  <option value="新品・未使用">新品・未使用</option>
+                  <option value="未使用に近い">未使用に近い</option>
+                  <option value="目立った傷や汚れなし">
+                    目立った傷や汚れなし
+                  </option>
+                  <option value="やや傷や汚れあり">やや傷や汚れあり</option>
+                  <option value="傷や汚れあり">傷や汚れあり</option>
+                </select>
               </div>
 
               <div>
