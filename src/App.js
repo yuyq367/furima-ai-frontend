@@ -303,6 +303,14 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    if (!isMyPage || !loginUser) {
+      return;
+    }
+
+    handleGetMyPage();
+  }, [isMyPage, loginUser]);
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>Furima AI</h1>
@@ -335,8 +343,6 @@ function App() {
               <hr />
 
               <h2>マイページ</h2>
-
-              <button onClick={handleGetMyPage}>マイページ情報を取得</button>
 
               <h3>自分の出品一覧</h3>
 
