@@ -17,6 +17,12 @@ function App() {
   const [backendMessage, setBackendMessage] = useState("");
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [newProductTitle, setNewProductTitle] = useState("");
+  const [newProductDescription, setNewProductDescription] = useState("");
+  const [newProductPrice, setNewProductPrice] = useState("");
+  const [newProductCategory, setNewProductCategory] = useState("");
+  const [newProductCondition, setNewProductCondition] = useState("");
+  const [newProductImageUrl, setNewProductImageUrl] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -26,17 +32,17 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/products");
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/products");
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -115,6 +121,57 @@ function App() {
     }
   };
 
+  const handleCreateProduct = async () => {
+    try {
+      setMessage("");
+      setBackendMessage("");
+
+      if (!loginUser) {
+        setMessage("ログインしてください");
+        return;
+      }
+
+      const idToken = await loginUser.getIdToken();
+
+      const response = await fetch("http://127.0.0.1:8000/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          title: newProductTitle,
+          description: newProductDescription,
+          price: Number(newProductPrice),
+          image_url: newProductImageUrl || null,
+          category: newProductCategory,
+          condition_label: newProductCondition,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBackendMessage(JSON.stringify(data, null, 2));
+        return;
+      }
+
+      setBackendMessage(JSON.stringify(data, null, 2));
+      setMessage("商品を出品しました");
+
+      setNewProductTitle("");
+      setNewProductDescription("");
+      setNewProductPrice("");
+      setNewProductCategory("");
+      setNewProductCondition("");
+      setNewProductImageUrl("");
+
+      await fetchProducts();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>Furima AI</h1>
@@ -129,6 +186,64 @@ function App() {
           <button onClick={handleCheckBackendAuth}>バックエンド認証確認</button>
 
           <button onClick={handleLogout}>ログアウト</button>
+          <hr />
+
+          <h2>商品を出品する</h2>
+
+          <div>
+            <input
+              type="text"
+              placeholder="商品名"
+              value={newProductTitle}
+              onChange={(event) => setNewProductTitle(event.target.value)}
+            />
+          </div>
+
+          <div>
+            <textarea
+              placeholder="商品説明"
+              value={newProductDescription}
+              onChange={(event) => setNewProductDescription(event.target.value)}
+            />
+          </div>
+
+          <div>
+            <input
+              type="number"
+              placeholder="価格"
+              value={newProductPrice}
+              onChange={(event) => setNewProductPrice(event.target.value)}
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="カテゴリ"
+              value={newProductCategory}
+              onChange={(event) => setNewProductCategory(event.target.value)}
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="商品の状態"
+              value={newProductCondition}
+              onChange={(event) => setNewProductCondition(event.target.value)}
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="画像URL（任意）"
+              value={newProductImageUrl}
+              onChange={(event) => setNewProductImageUrl(event.target.value)}
+            />
+          </div>
+
+          <button onClick={handleCreateProduct}>出品する</button>
         </div>
       ) : (
         <div>
