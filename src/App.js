@@ -103,7 +103,12 @@ function App() {
     try {
       setMessage("");
       setBackendMessage("");
+      setSelectedProduct(null);
+      setMyProducts([]);
+      setMyPurchases([]);
+
       await signOut(auth);
+
       setMessage("ログアウトしました");
     } catch (error) {
       setMessage(error.message);
@@ -138,19 +143,6 @@ function App() {
       setBackendMessage(JSON.stringify(data, null, 2));
     } catch (error) {
       setBackendMessage(error.message);
-    }
-  };
-
-  const handleShowProductDetail = async (productId) => {
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/products/${productId}`,
-      );
-      const data = await response.json();
-
-      setSelectedProduct(data);
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -337,6 +329,77 @@ function App() {
 
           <button onClick={handleCheckBackendAuth}>バックエンド認証確認</button>
           <button onClick={handleLogout}>ログアウト</button>
+
+          {isSellPage && (
+            <>
+              <hr />
+
+              <h2>商品を出品する</h2>
+
+              <div>
+                <input
+                  type="text"
+                  placeholder="商品名"
+                  value={newProductTitle}
+                  onChange={(event) => setNewProductTitle(event.target.value)}
+                />
+              </div>
+
+              <div>
+                <textarea
+                  placeholder="商品説明"
+                  value={newProductDescription}
+                  onChange={(event) =>
+                    setNewProductDescription(event.target.value)
+                  }
+                />
+              </div>
+
+              <div>
+                <input
+                  type="number"
+                  placeholder="価格"
+                  value={newProductPrice}
+                  onChange={(event) => setNewProductPrice(event.target.value)}
+                />
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  placeholder="カテゴリ"
+                  value={newProductCategory}
+                  onChange={(event) =>
+                    setNewProductCategory(event.target.value)
+                  }
+                />
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  placeholder="商品の状態"
+                  value={newProductCondition}
+                  onChange={(event) =>
+                    setNewProductCondition(event.target.value)
+                  }
+                />
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  placeholder="画像URL（任意）"
+                  value={newProductImageUrl}
+                  onChange={(event) =>
+                    setNewProductImageUrl(event.target.value)
+                  }
+                />
+              </div>
+
+              <button onClick={handleCreateProduct}>出品する</button>
+            </>
+          )}
 
           {isMyPage && (
             <>
