@@ -542,6 +542,14 @@ function App() {
         </div>
       ) : (
         <div>
+          {isSellPage && <p>商品を出品するにはログインしてください</p>}
+
+          {isMyPage && <p>マイページを見るにはログインしてください</p>}
+
+          {!isSellPage && !isMyPage && (
+            <p>ログインすると、商品の出品や購入ができます</p>
+          )}
+
           <div>
             <input
               type="email"
