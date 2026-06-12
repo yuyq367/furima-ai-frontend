@@ -14,6 +14,7 @@ import SellPage from "./pages/SellPage";
 import MyPage from "./pages/MyPage";
 import AuthForm from "./components/AuthForm";
 import UserMenu from "./components/UserMenu";
+import API_BASE_URL from "./api";
 
 function App() {
   const [email, setEmail] = useState("");
@@ -72,7 +73,7 @@ function App() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/products");
+      const response = await fetch(`${API_BASE_URL}/products`);
       const data = await response.json();
       setProducts(data);
     } catch (error) {
@@ -92,7 +93,7 @@ function App() {
 
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/products/${productDetailId}`,
+          `${API_BASE_URL}/products/${productDetailId}`,
         );
         const data = await response.json();
         setSelectedProduct(data);
@@ -151,7 +152,7 @@ function App() {
       try {
         const idToken = await loginUser.getIdToken();
 
-        const response = await fetch("http://127.0.0.1:8000/auth/me", {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${idToken}`,
@@ -217,7 +218,7 @@ function App() {
 
       const idToken = await loginUser.getIdToken();
 
-      const response = await fetch("http://127.0.0.1:8000/products", {
+      const response = await fetch(`${API_BASE_URL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -269,7 +270,7 @@ function App() {
       const idToken = await loginUser.getIdToken();
 
       const response = await fetch(
-        `http://127.0.0.1:8000/products/${productId}/purchase`,
+        `${API_BASE_URL}/products/${productId}/purchase`,
         {
           method: "POST",
           headers: {
@@ -291,7 +292,7 @@ function App() {
       await fetchProducts();
 
       const detailResponse = await fetch(
-        `http://127.0.0.1:8000/products/${productId}`,
+        `${API_BASE_URL}/products/${productId}`,
       );
       const detailData = await detailResponse.json();
       setSelectedProduct(detailData);
@@ -313,7 +314,7 @@ function App() {
       const idToken = await loginUser.getIdToken();
 
       const productsResponse = await fetch(
-        "http://127.0.0.1:8000/users/me/products",
+        `${API_BASE_URL}/users/me/products`,
         {
           method: "GET",
           headers: {
@@ -325,7 +326,7 @@ function App() {
       const productsData = await productsResponse.json();
 
       const purchasesResponse = await fetch(
-        "http://127.0.0.1:8000/users/me/purchases",
+        `${API_BASE_URL}/users/me/purchases`,
         {
           method: "GET",
           headers: {
