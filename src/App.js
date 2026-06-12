@@ -13,6 +13,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import SellPage from "./pages/SellPage";
 import MyPage from "./pages/MyPage";
 import AuthForm from "./components/AuthForm";
+import ConfirmDialog from "./components/ConfirmDialog";
 import API_BASE_URL from "./api";
 import "./App.css";
 
@@ -24,6 +25,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [message, setMessage] = useState("");
   const [backendMessage, setBackendMessage] = useState("");
+  const [confirmDialog, setConfirmDialog] = useState(null);
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [productsError, setProductsError] = useState("");
@@ -37,6 +39,7 @@ function App() {
   const [newProductCondition, setNewProductCondition] = useState("");
   const [newProductImageUrl, setNewProductImageUrl] = useState("");
   const [aiDescriptionLoading, setAiDescriptionLoading] = useState(false);
+  const [aiDescriptionError, setAiDescriptionError] = useState("");
   const [myProducts, setMyProducts] = useState([]);
   const [myPurchases, setMyPurchases] = useState([]);
   const [myPageLoading, setMyPageLoading] = useState(false);
@@ -226,23 +229,48 @@ function App() {
     fetchCurrentUser();
   }, [loginUser]);
 
+  const openConfirmDialog = ({
+    title,
+    message,
+    confirmLabel = "OK",
+    cancelLabel = "キャンセル",
+  }) => {
+    return new Promise((resolve) => {
+      setConfirmDialog({
+        title,
+        message,
+        confirmLabel,
+        cancelLabel,
+        onConfirm: () => {
+          setConfirmDialog(null);
+          resolve(true);
+        },
+        onCancel: () => {
+          setConfirmDialog(null);
+          resolve(false);
+        },
+      });
+    });
+  };
+
   const handleGenerateProductDescription = async () => {
     try {
       setMessage("");
       setBackendMessage("");
+      setAiDescriptionError("");
 
       if (!newProductTitle) {
-        setMessage("AI説明文を生成するには、商品名を入力してください");
+        setAiDescriptionError("商品名を入力してください");
         return;
       }
 
       if (!newProductCategory) {
-        setMessage("AI説明文を生成するには、カテゴリを選択してください");
+        setAiDescriptionError("カテゴリを選択してください");
         return;
       }
 
       if (!newProductCondition) {
-        setMessage("AI説明文を生成するには、商品の状態を選択してください");
+        setAiDescriptionError("商品の状態を選択してください");
         return;
       }
 
@@ -265,14 +293,15 @@ function App() {
 
       if (!response.ok) {
         setBackendMessage(JSON.stringify(data, null, 2));
-        setMessage(data.detail || "AI説明文の生成に失敗しました");
+        setAiDescriptionError(data.detail || "AI説明文の生成に失敗しました");
         return;
       }
 
       setNewProductDescription(data.description);
+      setAiDescriptionError("");
       setMessage("AI説明文を生成しました");
     } catch (error) {
-      setMessage(error.message);
+      setAiDescriptionError(error.message);
     } finally {
       setAiDescriptionLoading(false);
     }
@@ -318,11 +347,14 @@ function App() {
         return;
       }
 
-      const confirmed = window.confirm(
-        `この内容で商品を出品しますか？\n\n商品名: ${newProductTitle}\n価格: ${Number(
+      const confirmed = await openConfirmDialog({
+        title: "商品を出品しますか？",
+        message: `商品名: ${newProductTitle}\n価格: ${Number(
           newProductPrice,
         ).toLocaleString()}円\nカテゴリ: ${newProductCategory}\n状態: ${newProductCondition}`,
-      );
+        confirmLabel: "出品する",
+        cancelLabel: "キャンセル",
+      });
 
       if (!confirmed) {
         return;
@@ -379,7 +411,16 @@ function App() {
         return;
       }
 
-      const confirmed = window.confirm("本当にこの商品を購入しますか？");
+      const confirmed = await openConfirmDialog({
+        title: "商品を購入しますか？",
+        message: selectedProduct
+          ? `商品名: ${selectedProduct.title}\n価格: ${Number(
+              selectedProduct.price,
+            ).toLocaleString()}円\n購入すると商品は売り切れになります。`
+          : "購入すると商品は売り切れになります。",
+        confirmLabel: "購入する",
+        cancelLabel: "キャンセル",
+      });
 
       if (!confirmed) {
         return;
@@ -582,6 +623,7 @@ function App() {
               newProductImageUrl={newProductImageUrl}
               setNewProductImageUrl={setNewProductImageUrl}
               aiDescriptionLoading={aiDescriptionLoading}
+              aiDescriptionError={aiDescriptionError}
               handleGenerateProductDescription={
                 handleGenerateProductDescription
               }
@@ -656,6 +698,17 @@ function App() {
               handlePurchaseProduct={handlePurchaseProduct}
             />
           )}
+
+        {confirmDialog && (
+          <ConfirmDialog
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            cancelLabel={confirmDialog.cancelLabel}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={confirmDialog.onCancel}
+          />
+        )}
       </main>
     </div>
   );
