@@ -13,7 +13,6 @@ function MyPage({
   if (myPageLoading) {
     return (
       <>
-        <hr />
         <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
         <div className="loading-box">マイページを読み込み中です...</div>
       </>
@@ -23,7 +22,6 @@ function MyPage({
   if (myPageError) {
     return (
       <>
-        <hr />
         <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
         <div className="empty-state">
           <p>{myPageError}</p>
@@ -34,8 +32,6 @@ function MyPage({
 
   return (
     <>
-      <hr />
-
       <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
 
       <div className="mypage-layout">
@@ -110,6 +106,13 @@ function MyPage({
                       {purchase.price.toLocaleString()}円
                     </p>
                   </div>
+
+                  <Link
+                    to={`/products/${purchase.product_id}`}
+                    className="mini-link"
+                  >
+                    詳細を見る
+                  </Link>
                 </article>
               ))}
             </div>

@@ -495,149 +495,168 @@ function App() {
   }, [isMyPage, loginUser]);
 
   return (
-    <div className="app-container">
+    <div className="app-shell">
       <header className="app-header">
-        <div>
-          <h1 className="app-logo">Furima AI</h1>
-          <p className="app-subtitle">AIとつくる、次世代フリマアプリ</p>
+        <div className="app-header-inner">
+          <Link to="/" className="app-brand">
+            <h1 className="app-logo">Furima AI</h1>
+            <p className="app-subtitle">AIとつくる、次世代フリマアプリ</p>
+          </Link>
+
+          <nav className="app-nav">
+            <Link
+              to="/"
+              className={`nav-link ${isHomePage ? "nav-link-active" : ""}`}
+            >
+              ホーム
+            </Link>
+
+            <Link
+              to="/sell"
+              className={`nav-link ${isSellPage ? "nav-link-active" : ""}`}
+            >
+              出品
+            </Link>
+
+            {loginUser ? (
+              <Link
+                to="/mypage"
+                className={`nav-link ${isMyPage ? "nav-link-active" : ""}`}
+              >
+                マイページ
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className={`nav-link ${isLoginPage ? "nav-link-active" : ""}`}
+              >
+                ログイン
+              </Link>
+            )}
+          </nav>
         </div>
-
-        <nav className="app-nav">
-          <Link to="/" className="nav-link">
-            ホーム
-          </Link>
-          <Link to="/sell" className="nav-link">
-            出品
-          </Link>
-
-          {loginUser ? (
-            <Link to="/mypage" className="nav-link">
-              マイページ
-            </Link>
-          ) : (
-            <Link to="/login" className="nav-link">
-              ログイン
-            </Link>
-          )}
-        </nav>
       </header>
 
-      <h2 className="page-title">{pageTitle}</h2>
+      <main className="app-main">
+        <h2 className="page-title">{pageTitle}</h2>
 
-      {isLoginPage &&
-        (loginUser ? (
-          <div className="empty-state">
-            <p>すでにログインしています</p>
-            <div className="empty-state-actions">
-              <Link to="/" className="mini-link">
-                商品一覧に戻る
-              </Link>
-              <Link to="/mypage" className="mini-link">
-                マイページへ
+        {isLoginPage &&
+          (loginUser ? (
+            <div className="empty-state">
+              <p>すでにログインしています</p>
+              <div className="empty-state-actions">
+                <Link to="/" className="mini-link">
+                  商品一覧に戻る
+                </Link>
+                <Link to="/mypage" className="mini-link">
+                  マイページへ
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <AuthForm
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              handleSignup={handleSignup}
+              handleLogin={handleLogin}
+              isSellPage={false}
+              isMyPage={false}
+            />
+          ))}
+
+        {isSellPage &&
+          (loginUser ? (
+            <SellPage
+              newProductTitle={newProductTitle}
+              setNewProductTitle={setNewProductTitle}
+              newProductDescription={newProductDescription}
+              setNewProductDescription={setNewProductDescription}
+              newProductPrice={newProductPrice}
+              setNewProductPrice={setNewProductPrice}
+              newProductCategory={newProductCategory}
+              setNewProductCategory={setNewProductCategory}
+              newProductCondition={newProductCondition}
+              setNewProductCondition={setNewProductCondition}
+              newProductImageUrl={newProductImageUrl}
+              setNewProductImageUrl={setNewProductImageUrl}
+              aiDescriptionLoading={aiDescriptionLoading}
+              handleGenerateProductDescription={
+                handleGenerateProductDescription
+              }
+              handleCreateProduct={handleCreateProduct}
+            />
+          ) : (
+            <div className="empty-state">
+              <p>商品を出品するにはログインしてください</p>
+              <Link to="/login" className="mini-link">
+                ログインする
               </Link>
             </div>
+          ))}
+
+        {isMyPage &&
+          (loginUser ? (
+            <MyPage
+              loginUser={loginUser}
+              handleLogout={handleLogout}
+              myProducts={myProducts}
+              myPurchases={myPurchases}
+              myPageLoading={myPageLoading}
+              myPageError={myPageError}
+            />
+          ) : (
+            <div className="empty-state">
+              <p>マイページを見るにはログインしてください</p>
+              <Link to="/login" className="mini-link">
+                ログインする
+              </Link>
+            </div>
+          ))}
+
+        {message && <p className="message">{message}</p>}
+
+        {backendMessage && (
+          <div className="error-box">
+            <h3>エラー詳細</h3>
+            <pre>{backendMessage}</pre>
           </div>
-        ) : (
-          <AuthForm
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            handleSignup={handleSignup}
-            handleLogin={handleLogin}
-            isSellPage={false}
-            isMyPage={false}
-          />
-        ))}
+        )}
 
-      {isSellPage &&
-        (loginUser ? (
-          <SellPage
-            newProductTitle={newProductTitle}
-            setNewProductTitle={setNewProductTitle}
-            newProductDescription={newProductDescription}
-            setNewProductDescription={setNewProductDescription}
-            newProductPrice={newProductPrice}
-            setNewProductPrice={setNewProductPrice}
-            newProductCategory={newProductCategory}
-            setNewProductCategory={setNewProductCategory}
-            newProductCondition={newProductCondition}
-            setNewProductCondition={setNewProductCondition}
-            newProductImageUrl={newProductImageUrl}
-            setNewProductImageUrl={setNewProductImageUrl}
-            aiDescriptionLoading={aiDescriptionLoading}
-            handleGenerateProductDescription={handleGenerateProductDescription}
-            handleCreateProduct={handleCreateProduct}
-          />
-        ) : (
-          <div className="empty-state">
-            <p>商品を出品するにはログインしてください</p>
-            <Link to="/login" className="mini-link">
-              ログインする
-            </Link>
-          </div>
-        ))}
-
-      {isMyPage &&
-        (loginUser ? (
-          <MyPage
-            loginUser={loginUser}
-            handleLogout={handleLogout}
-            myProducts={myProducts}
-            myPurchases={myPurchases}
-            myPageLoading={myPageLoading}
-            myPageError={myPageError}
-          />
-        ) : (
-          <div className="empty-state">
-            <p>マイページを見るにはログインしてください</p>
-            <Link to="/login" className="mini-link">
-              ログインする
-            </Link>
-          </div>
-        ))}
-
-      {message && <p className="message">{message}</p>}
-
-      {backendMessage && (
-        <div className="error-box">
-          <h3>エラー詳細</h3>
-          <pre>{backendMessage}</pre>
-        </div>
-      )}
-
-      {isHomePage && (
-        <HomePage
-          products={products}
-          productsLoading={productsLoading}
-          productsError={productsError}
-        />
-      )}
-
-      {isProductDetailPage && productDetailLoading && (
-        <div className="loading-box">商品詳細を読み込み中です...</div>
-      )}
-
-      {isProductDetailPage && !productDetailLoading && productDetailError && (
-        <div className="empty-state">
-          <p>{productDetailError}</p>
-          <Link to="/" className="mini-link">
-            商品一覧に戻る
-          </Link>
-        </div>
-      )}
-
-      {isProductDetailPage &&
-        !productDetailLoading &&
-        !productDetailError &&
-        selectedProduct && (
-          <ProductDetailPage
-            selectedProduct={selectedProduct}
-            loginUser={loginUser}
-            currentUser={currentUser}
-            handlePurchaseProduct={handlePurchaseProduct}
+        {isHomePage && (
+          <HomePage
+            products={products}
+            productsLoading={productsLoading}
+            productsError={productsError}
           />
         )}
+
+        {isProductDetailPage && productDetailLoading && (
+          <div className="loading-box">商品詳細を読み込み中です...</div>
+        )}
+
+        {isProductDetailPage && !productDetailLoading && productDetailError && (
+          <div className="empty-state">
+            <p>{productDetailError}</p>
+            <Link to="/" className="mini-link">
+              商品一覧に戻る
+            </Link>
+          </div>
+        )}
+
+        {isProductDetailPage &&
+          !productDetailLoading &&
+          !productDetailError &&
+          selectedProduct && (
+            <ProductDetailPage
+              selectedProduct={selectedProduct}
+              loginUser={loginUser}
+              currentUser={currentUser}
+              handlePurchaseProduct={handlePurchaseProduct}
+            />
+          )}
+      </main>
     </div>
   );
 }

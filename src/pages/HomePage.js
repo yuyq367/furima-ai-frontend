@@ -3,8 +3,6 @@ import ProductCard from "../components/ProductCard";
 function HomePage({ products, productsLoading, productsError }) {
   return (
     <>
-      <hr />
-
       {productsLoading ? (
         <div className="loading-box">商品一覧を読み込み中です...</div>
       ) : productsError ? (
