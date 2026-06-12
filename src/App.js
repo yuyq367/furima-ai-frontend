@@ -13,6 +13,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import SellPage from "./pages/SellPage";
 import MyPage from "./pages/MyPage";
 import AuthForm from "./components/AuthForm";
+import UserMenu from "./components/UserMenu";
 
 function App() {
   const [email, setEmail] = useState("");
@@ -381,10 +382,7 @@ function App() {
 
       {loginUser ? (
         <div>
-          <p>ログイン中です</p>
-          <p>Email: {loginUser.email}</p>
-
-          <button onClick={handleLogout}>ログアウト</button>
+          <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
 
           {isSellPage && (
             <SellPage
