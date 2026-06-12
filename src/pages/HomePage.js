@@ -5,12 +5,10 @@ function HomePage({ products }) {
     <>
       <hr />
 
-      <h2>商品一覧</h2>
-
       {products.length === 0 ? (
         <p>商品がありません</p>
       ) : (
-        <div>
+        <div className="product-grid">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
