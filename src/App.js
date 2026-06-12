@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -13,7 +13,6 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import SellPage from "./pages/SellPage";
 import MyPage from "./pages/MyPage";
 import AuthForm from "./components/AuthForm";
-import UserMenu from "./components/UserMenu";
 import API_BASE_URL from "./api";
 import "./App.css";
 
@@ -44,6 +43,7 @@ function App() {
   const [myPageError, setMyPageError] = useState("");
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   const productDetailMatch = location.pathname.match(/^\/products\/(\d+)$/);
   const productDetailId = productDetailMatch ? productDetailMatch[1] : null;
@@ -51,6 +51,7 @@ function App() {
   const isHomePage = location.pathname === "/";
   const isSellPage = location.pathname === "/sell";
   const isMyPage = location.pathname === "/mypage";
+  const isLoginPage = location.pathname === "/login";
   const isProductDetailPage = productDetailId !== null;
 
   let pageTitle = "Furima AI";
@@ -65,6 +66,10 @@ function App() {
 
   if (isMyPage) {
     pageTitle = "マイページ";
+  }
+
+  if (isLoginPage) {
+    pageTitle = "ログイン";
   }
 
   if (isProductDetailPage) {
@@ -150,6 +155,7 @@ function App() {
       setMessage("");
       await createUserWithEmailAndPassword(auth, email, password);
       setMessage("新規登録に成功しました");
+      navigate("/");
     } catch (error) {
       setMessage(error.message);
     }
@@ -160,6 +166,7 @@ function App() {
       setMessage("");
       await signInWithEmailAndPassword(auth, email, password);
       setMessage("ログインに成功しました");
+      navigate("/");
     } catch (error) {
       setMessage(error.message);
     }
@@ -179,6 +186,7 @@ function App() {
       await signOut(auth);
 
       setMessage("ログアウトしました");
+      navigate("/");
     } catch (error) {
       setMessage(error.message);
     }
@@ -501,61 +509,93 @@ function App() {
           <Link to="/sell" className="nav-link">
             出品
           </Link>
-          <Link to="/mypage" className="nav-link">
-            マイページ
-          </Link>
+
+          {loginUser ? (
+            <Link to="/mypage" className="nav-link">
+              マイページ
+            </Link>
+          ) : (
+            <Link to="/login" className="nav-link">
+              ログイン
+            </Link>
+          )}
         </nav>
       </header>
 
       <h2 className="page-title">{pageTitle}</h2>
 
-      {loginUser ? (
-        <div>
-          <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
+      {isLoginPage &&
+        (loginUser ? (
+          <div className="empty-state">
+            <p>すでにログインしています</p>
+            <div className="empty-state-actions">
+              <Link to="/" className="mini-link">
+                商品一覧に戻る
+              </Link>
+              <Link to="/mypage" className="mini-link">
+                マイページへ
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <AuthForm
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            handleSignup={handleSignup}
+            handleLogin={handleLogin}
+            isSellPage={false}
+            isMyPage={false}
+          />
+        ))}
 
-          {isSellPage && (
-            <SellPage
-              newProductTitle={newProductTitle}
-              setNewProductTitle={setNewProductTitle}
-              newProductDescription={newProductDescription}
-              setNewProductDescription={setNewProductDescription}
-              newProductPrice={newProductPrice}
-              setNewProductPrice={setNewProductPrice}
-              newProductCategory={newProductCategory}
-              setNewProductCategory={setNewProductCategory}
-              newProductCondition={newProductCondition}
-              setNewProductCondition={setNewProductCondition}
-              newProductImageUrl={newProductImageUrl}
-              setNewProductImageUrl={setNewProductImageUrl}
-              aiDescriptionLoading={aiDescriptionLoading}
-              handleGenerateProductDescription={
-                handleGenerateProductDescription
-              }
-              handleCreateProduct={handleCreateProduct}
-            />
-          )}
+      {isSellPage &&
+        (loginUser ? (
+          <SellPage
+            newProductTitle={newProductTitle}
+            setNewProductTitle={setNewProductTitle}
+            newProductDescription={newProductDescription}
+            setNewProductDescription={setNewProductDescription}
+            newProductPrice={newProductPrice}
+            setNewProductPrice={setNewProductPrice}
+            newProductCategory={newProductCategory}
+            setNewProductCategory={setNewProductCategory}
+            newProductCondition={newProductCondition}
+            setNewProductCondition={setNewProductCondition}
+            newProductImageUrl={newProductImageUrl}
+            setNewProductImageUrl={setNewProductImageUrl}
+            aiDescriptionLoading={aiDescriptionLoading}
+            handleGenerateProductDescription={handleGenerateProductDescription}
+            handleCreateProduct={handleCreateProduct}
+          />
+        ) : (
+          <div className="empty-state">
+            <p>商品を出品するにはログインしてください</p>
+            <Link to="/login" className="mini-link">
+              ログインする
+            </Link>
+          </div>
+        ))}
 
-          {isMyPage && (
-            <MyPage
-              myProducts={myProducts}
-              myPurchases={myPurchases}
-              myPageLoading={myPageLoading}
-              myPageError={myPageError}
-            />
-          )}
-        </div>
-      ) : (
-        <AuthForm
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          handleSignup={handleSignup}
-          handleLogin={handleLogin}
-          isSellPage={isSellPage}
-          isMyPage={isMyPage}
-        />
-      )}
+      {isMyPage &&
+        (loginUser ? (
+          <MyPage
+            loginUser={loginUser}
+            handleLogout={handleLogout}
+            myProducts={myProducts}
+            myPurchases={myPurchases}
+            myPageLoading={myPageLoading}
+            myPageError={myPageError}
+          />
+        ) : (
+          <div className="empty-state">
+            <p>マイページを見るにはログインしてください</p>
+            <Link to="/login" className="mini-link">
+              ログインする
+            </Link>
+          </div>
+        ))}
 
       {message && <p className="message">{message}</p>}
 
