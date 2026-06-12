@@ -9,25 +9,31 @@ function AuthForm({
   isMyPage,
 }) {
   return (
-    <div>
-      {isSellPage && <p>商品を出品するにはログインしてください</p>}
+    <section className="form-card auth-card">
+      <div className="form-card-header">
+        <h3>ログイン / 新規登録</h3>
 
-      {isMyPage && <p>マイページを見るにはログインしてください</p>}
+        {isSellPage && <p>商品を出品するにはログインしてください。</p>}
 
-      {!isSellPage && !isMyPage && (
-        <p>ログインすると、商品の出品や購入ができます</p>
-      )}
+        {isMyPage && <p>マイページを見るにはログインしてください。</p>}
 
-      <div>
+        {!isSellPage && !isMyPage && (
+          <p>ログインすると、商品の出品や購入ができます。</p>
+        )}
+      </div>
+
+      <div className="form-field">
+        <label>メールアドレス</label>
         <input
           type="email"
-          placeholder="メールアドレス"
+          placeholder="example@example.com"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
       </div>
 
-      <div>
+      <div className="form-field">
+        <label>パスワード</label>
         <input
           type="password"
           placeholder="パスワード"
@@ -36,9 +42,15 @@ function AuthForm({
         />
       </div>
 
-      <button onClick={handleSignup}>新規登録</button>
-      <button onClick={handleLogin}>ログイン</button>
-    </div>
+      <div className="form-actions">
+        <button className="secondary-action" onClick={handleSignup}>
+          新規登録
+        </button>
+        <button className="primary-action" onClick={handleLogin}>
+          ログイン
+        </button>
+      </div>
+    </section>
   );
 }
 
