@@ -1,6 +1,26 @@
 import { Link } from "react-router-dom";
 
-function MyPage({ myProducts, myPurchases }) {
+function MyPage({ myProducts, myPurchases, myPageLoading, myPageError }) {
+  if (myPageLoading) {
+    return (
+      <>
+        <hr />
+        <div className="loading-box">マイページを読み込み中です...</div>
+      </>
+    );
+  }
+
+  if (myPageError) {
+    return (
+      <>
+        <hr />
+        <div className="empty-state">
+          <p>{myPageError}</p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <hr />
