@@ -26,6 +26,8 @@ function App() {
   const [message, setMessage] = useState("");
   const [backendMessage, setBackendMessage] = useState("");
   const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productsError, setProductsError] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productDetailLoading, setProductDetailLoading] = useState(false);
   const [productDetailError, setProductDetailError] = useState("");
@@ -37,6 +39,8 @@ function App() {
   const [newProductImageUrl, setNewProductImageUrl] = useState("");
   const [myProducts, setMyProducts] = useState([]);
   const [myPurchases, setMyPurchases] = useState([]);
+  const [myPageLoading, setMyPageLoading] = useState(false);
+  const [myPageError, setMyPageError] = useState("");
 
   const location = useLocation();
 
@@ -76,11 +80,25 @@ function App() {
 
   const fetchProducts = async () => {
     try {
+      setProductsLoading(true);
+      setProductsError("");
+
       const response = await fetch(`${API_BASE_URL}/products`);
       const data = await response.json();
+
+      if (!response.ok) {
+        setProducts([]);
+        setProductsError("商品一覧の取得に失敗しました");
+        return;
+      }
+
       setProducts(data);
     } catch (error) {
       console.error(error);
+      setProducts([]);
+      setProductsError("商品一覧の取得に失敗しました");
+    } finally {
+      setProductsLoading(false);
     }
   };
 
@@ -154,6 +172,8 @@ function App() {
       setSelectedProduct(null);
       setMyProducts([]);
       setMyPurchases([]);
+      setMyPageLoading(false);
+      setMyPageError("");
 
       await signOut(auth);
 
@@ -342,9 +362,12 @@ function App() {
     try {
       setMessage("");
       setBackendMessage("");
+      setMyPageLoading(true);
+      setMyPageError("");
 
       if (!loginUser) {
         setMessage("ログインしてください");
+        setMyPageLoading(false);
         return;
       }
 
@@ -376,19 +399,29 @@ function App() {
 
       if (!productsResponse.ok) {
         setBackendMessage(JSON.stringify(productsData, null, 2));
+        setMyProducts([]);
+        setMyPurchases([]);
+        setMyPageError("マイページ情報の取得に失敗しました");
         return;
       }
 
       if (!purchasesResponse.ok) {
         setBackendMessage(JSON.stringify(purchasesData, null, 2));
+        setMyProducts([]);
+        setMyPurchases([]);
+        setMyPageError("マイページ情報の取得に失敗しました");
         return;
       }
 
       setMyProducts(productsData);
       setMyPurchases(purchasesData);
-      setMessage("マイページ情報を取得しました");
     } catch (error) {
       setMessage(error.message);
+      setMyProducts([]);
+      setMyPurchases([]);
+      setMyPageError("マイページ情報の取得に失敗しました");
+    } finally {
+      setMyPageLoading(false);
     }
   };
 
@@ -446,7 +479,12 @@ function App() {
           )}
 
           {isMyPage && (
-            <MyPage myProducts={myProducts} myPurchases={myPurchases} />
+            <MyPage
+              myProducts={myProducts}
+              myPurchases={myPurchases}
+              myPageLoading={myPageLoading}
+              myPageError={myPageError}
+            />
           )}
         </div>
       ) : (
@@ -471,7 +509,13 @@ function App() {
         </div>
       )}
 
-      {isHomePage && <HomePage products={products} />}
+      {isHomePage && (
+        <HomePage
+          products={products}
+          productsLoading={productsLoading}
+          productsError={productsError}
+        />
+      )}
 
       {isProductDetailPage && productDetailLoading && (
         <div className="loading-box">商品詳細を読み込み中です...</div>
