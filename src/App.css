@@ -761,3 +761,14 @@ hr {
     flex-direction: column;
   }
 }
+
+.loading-box {
+  padding: 24px;
+  margin-top: 20px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  color: #374151;
+  font-weight: 800;
+  text-align: center;
+}
