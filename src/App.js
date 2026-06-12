@@ -37,6 +37,7 @@ function App() {
   const [newProductCategory, setNewProductCategory] = useState("");
   const [newProductCondition, setNewProductCondition] = useState("");
   const [newProductImageUrl, setNewProductImageUrl] = useState("");
+  const [aiDescriptionLoading, setAiDescriptionLoading] = useState(false);
   const [myProducts, setMyProducts] = useState([]);
   const [myPurchases, setMyPurchases] = useState([]);
   const [myPageLoading, setMyPageLoading] = useState(false);
@@ -216,6 +217,58 @@ function App() {
 
     fetchCurrentUser();
   }, [loginUser]);
+
+  const handleGenerateProductDescription = async () => {
+    try {
+      setMessage("");
+      setBackendMessage("");
+
+      if (!newProductTitle) {
+        setMessage("AI説明文を生成するには、商品名を入力してください");
+        return;
+      }
+
+      if (!newProductCategory) {
+        setMessage("AI説明文を生成するには、カテゴリを選択してください");
+        return;
+      }
+
+      if (!newProductCondition) {
+        setMessage("AI説明文を生成するには、商品の状態を選択してください");
+        return;
+      }
+
+      setAiDescriptionLoading(true);
+
+      const response = await fetch(`${API_BASE_URL}/ai/product-description`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: newProductTitle,
+          category: newProductCategory,
+          condition_label: newProductCondition,
+          price: newProductPrice ? Number(newProductPrice) : null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBackendMessage(JSON.stringify(data, null, 2));
+        setMessage(data.detail || "AI説明文の生成に失敗しました");
+        return;
+      }
+
+      setNewProductDescription(data.description);
+      setMessage("AI説明文を生成しました");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setAiDescriptionLoading(false);
+    }
+  };
 
   const handleCreateProduct = async () => {
     try {
@@ -474,6 +527,10 @@ function App() {
               setNewProductCondition={setNewProductCondition}
               newProductImageUrl={newProductImageUrl}
               setNewProductImageUrl={setNewProductImageUrl}
+              aiDescriptionLoading={aiDescriptionLoading}
+              handleGenerateProductDescription={
+                handleGenerateProductDescription
+              }
               handleCreateProduct={handleCreateProduct}
             />
           )}

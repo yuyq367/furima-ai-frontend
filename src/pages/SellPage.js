@@ -11,6 +11,8 @@ function SellPage({
   setNewProductCondition,
   newProductImageUrl,
   setNewProductImageUrl,
+  aiDescriptionLoading,
+  handleGenerateProductDescription,
   handleCreateProduct,
 }) {
   return (
@@ -35,7 +37,19 @@ function SellPage({
           </div>
 
           <div className="form-field form-field-full">
-            <label>商品説明</label>
+            <div className="form-label-row">
+              <label>商品説明</label>
+
+              <button
+                type="button"
+                className="ai-generate-button"
+                onClick={handleGenerateProductDescription}
+                disabled={aiDescriptionLoading}
+              >
+                {aiDescriptionLoading ? "生成中..." : "AIで説明文を生成"}
+              </button>
+            </div>
+
             <textarea
               placeholder="商品の特徴や状態を入力してください"
               value={newProductDescription}
