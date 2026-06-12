@@ -1,10 +1,20 @@
 import { Link } from "react-router-dom";
 
-function MyPage({ myProducts, myPurchases, myPageLoading, myPageError }) {
+import UserMenu from "../components/UserMenu";
+
+function MyPage({
+  loginUser,
+  handleLogout,
+  myProducts,
+  myPurchases,
+  myPageLoading,
+  myPageError,
+}) {
   if (myPageLoading) {
     return (
       <>
         <hr />
+        <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
         <div className="loading-box">マイページを読み込み中です...</div>
       </>
     );
@@ -14,6 +24,7 @@ function MyPage({ myProducts, myPurchases, myPageLoading, myPageError }) {
     return (
       <>
         <hr />
+        <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
         <div className="empty-state">
           <p>{myPageError}</p>
         </div>
@@ -24,6 +35,8 @@ function MyPage({ myProducts, myPurchases, myPageLoading, myPageError }) {
   return (
     <>
       <hr />
+
+      <UserMenu loginUser={loginUser} handleLogout={handleLogout} />
 
       <div className="mypage-layout">
         <section className="mypage-section">
