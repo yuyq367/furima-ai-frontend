@@ -12,6 +12,7 @@ function SellPage({
   newProductImageUrl,
   setNewProductImageUrl,
   aiDescriptionLoading,
+  aiDescriptionError,
   handleGenerateProductDescription,
   handleCreateProduct,
 }) {
@@ -51,9 +52,16 @@ function SellPage({
           >
             <option value="">カテゴリを選択</option>
             <option value="衣類">衣類</option>
-            <option value="本">本</option>
-            <option value="家電">家電</option>
-            <option value="コスメ">コスメ</option>
+            <option value="靴・バッグ">靴・バッグ</option>
+            <option value="アクセサリー">アクセサリー</option>
+            <option value="本・漫画">本・漫画</option>
+            <option value="ゲーム・おもちゃ">ゲーム・おもちゃ</option>
+            <option value="家電・スマホ">家電・スマホ</option>
+            <option value="インテリア">インテリア</option>
+            <option value="コスメ・美容">コスメ・美容</option>
+            <option value="スポーツ・アウトドア">スポーツ・アウトドア</option>
+            <option value="食品">食品</option>
+            <option value="チケット">チケット</option>
             <option value="その他">その他</option>
           </select>
         </div>
@@ -77,14 +85,20 @@ function SellPage({
           <div className="form-label-row">
             <label>商品説明</label>
 
-            <button
-              type="button"
-              className="ai-generate-button"
-              onClick={handleGenerateProductDescription}
-              disabled={aiDescriptionLoading}
-            >
-              {aiDescriptionLoading ? "生成中..." : "AIで説明文を生成"}
-            </button>
+            <div className="form-label-actions">
+              {aiDescriptionError && (
+                <span className="inline-error">{aiDescriptionError}</span>
+              )}
+
+              <button
+                type="button"
+                className="ai-generate-button"
+                onClick={handleGenerateProductDescription}
+                disabled={aiDescriptionLoading}
+              >
+                {aiDescriptionLoading ? "生成中..." : "AIで説明文を生成"}
+              </button>
+            </div>
           </div>
 
           <textarea
