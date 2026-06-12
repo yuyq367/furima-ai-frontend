@@ -401,6 +401,99 @@ function App() {
     }
   };
 
+  const handleUpdateProduct = async (productId, updatedProduct) => {
+    try {
+      setMessage("");
+      setBackendMessage("");
+
+      if (!loginUser) {
+        setMessage("ログインしてください");
+        return false;
+      }
+
+      if (!updatedProduct.title) {
+        setMessage("商品名を入力してください");
+        return false;
+      }
+
+      if (!updatedProduct.description) {
+        setMessage("商品説明を入力してください");
+        return false;
+      }
+
+      if (!updatedProduct.price) {
+        setMessage("価格を入力してください");
+        return false;
+      }
+
+      if (Number(updatedProduct.price) <= 0) {
+        setMessage("価格は1円以上で入力してください");
+        return false;
+      }
+
+      if (!updatedProduct.category) {
+        setMessage("カテゴリを選択してください");
+        return false;
+      }
+
+      if (!updatedProduct.condition_label) {
+        setMessage("商品の状態を選択してください");
+        return false;
+      }
+
+      const confirmed = await openConfirmDialog({
+        title: "商品情報を更新しますか？",
+        message: `商品名: ${updatedProduct.title}\n価格: ${Number(
+          updatedProduct.price,
+        ).toLocaleString()}円\nカテゴリ: ${updatedProduct.category}\n状態: ${
+          updatedProduct.condition_label
+        }`,
+        confirmLabel: "更新する",
+        cancelLabel: "キャンセル",
+      });
+
+      if (!confirmed) {
+        return false;
+      }
+
+      const idToken = await loginUser.getIdToken();
+
+      const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          title: updatedProduct.title,
+          description: updatedProduct.description,
+          price: Number(updatedProduct.price),
+          image_url: updatedProduct.image_url || null,
+          category: updatedProduct.category,
+          condition_label: updatedProduct.condition_label,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBackendMessage(JSON.stringify(data, null, 2));
+        setMessage(data.detail || "商品情報の更新に失敗しました");
+        return false;
+      }
+
+      setSelectedProduct(data);
+      setMessage("商品情報を更新しました");
+
+      await fetchProducts();
+
+      return true;
+    } catch (error) {
+      setMessage(error.message);
+      return false;
+    }
+  };
+
   const handlePurchaseProduct = async (productId) => {
     try {
       setMessage("");
@@ -696,6 +789,7 @@ function App() {
               loginUser={loginUser}
               currentUser={currentUser}
               handlePurchaseProduct={handlePurchaseProduct}
+              handleUpdateProduct={handleUpdateProduct}
             />
           )}
 
