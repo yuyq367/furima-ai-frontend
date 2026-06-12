@@ -17,70 +17,89 @@ function SellPage({
     <>
       <hr />
 
-      <div>
-        <input
-          type="text"
-          placeholder="商品名"
-          value={newProductTitle}
-          onChange={(event) => setNewProductTitle(event.target.value)}
-        />
-      </div>
+      <section className="form-card">
+        <div className="form-card-header">
+          <h3>出品情報を入力</h3>
+          <p>商品名・状態・価格を入力して、商品を出品しましょう。</p>
+        </div>
 
-      <div>
-        <textarea
-          placeholder="商品説明"
-          value={newProductDescription}
-          onChange={(event) => setNewProductDescription(event.target.value)}
-        />
-      </div>
+        <div className="form-grid">
+          <div className="form-field">
+            <label>商品名</label>
+            <input
+              type="text"
+              placeholder="例：ワイヤレスイヤホン"
+              value={newProductTitle}
+              onChange={(event) => setNewProductTitle(event.target.value)}
+            />
+          </div>
 
-      <div>
-        <input
-          type="number"
-          placeholder="価格"
-          value={newProductPrice}
-          onChange={(event) => setNewProductPrice(event.target.value)}
-        />
-      </div>
+          <div className="form-field form-field-full">
+            <label>商品説明</label>
+            <textarea
+              placeholder="商品の特徴や状態を入力してください"
+              value={newProductDescription}
+              onChange={(event) => setNewProductDescription(event.target.value)}
+            />
+          </div>
 
-      <div>
-        <select
-          value={newProductCategory}
-          onChange={(event) => setNewProductCategory(event.target.value)}
-        >
-          <option value="">カテゴリを選択</option>
-          <option value="衣類">衣類</option>
-          <option value="本">本</option>
-          <option value="家電">家電</option>
-          <option value="コスメ">コスメ</option>
-          <option value="その他">その他</option>
-        </select>
-      </div>
+          <div className="form-field">
+            <label>価格</label>
+            <input
+              type="number"
+              placeholder="例：3000"
+              value={newProductPrice}
+              onChange={(event) => setNewProductPrice(event.target.value)}
+            />
+          </div>
 
-      <div>
-        <select
-          value={newProductCondition}
-          onChange={(event) => setNewProductCondition(event.target.value)}
-        >
-          <option value="">商品の状態を選択</option>
-          <option value="新品・未使用">新品・未使用</option>
-          <option value="未使用に近い">未使用に近い</option>
-          <option value="目立った傷や汚れなし">目立った傷や汚れなし</option>
-          <option value="やや傷や汚れあり">やや傷や汚れあり</option>
-          <option value="傷や汚れあり">傷や汚れあり</option>
-        </select>
-      </div>
+          <div className="form-field">
+            <label>カテゴリ</label>
+            <select
+              value={newProductCategory}
+              onChange={(event) => setNewProductCategory(event.target.value)}
+            >
+              <option value="">カテゴリを選択</option>
+              <option value="衣類">衣類</option>
+              <option value="本">本</option>
+              <option value="家電">家電</option>
+              <option value="コスメ">コスメ</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
 
-      <div>
-        <input
-          type="text"
-          placeholder="画像URL（任意）"
-          value={newProductImageUrl}
-          onChange={(event) => setNewProductImageUrl(event.target.value)}
-        />
-      </div>
+          <div className="form-field">
+            <label>商品の状態</label>
+            <select
+              value={newProductCondition}
+              onChange={(event) => setNewProductCondition(event.target.value)}
+            >
+              <option value="">商品の状態を選択</option>
+              <option value="新品・未使用">新品・未使用</option>
+              <option value="未使用に近い">未使用に近い</option>
+              <option value="目立った傷や汚れなし">目立った傷や汚れなし</option>
+              <option value="やや傷や汚れあり">やや傷や汚れあり</option>
+              <option value="傷や汚れあり">傷や汚れあり</option>
+            </select>
+          </div>
 
-      <button onClick={handleCreateProduct}>出品する</button>
+          <div className="form-field">
+            <label>画像URL</label>
+            <input
+              type="text"
+              placeholder="任意：画像URLを入力"
+              value={newProductImageUrl}
+              onChange={(event) => setNewProductImageUrl(event.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button className="primary-action" onClick={handleCreateProduct}>
+            出品する
+          </button>
+        </div>
+      </section>
     </>
   );
 }
