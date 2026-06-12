@@ -15,6 +15,7 @@ import MyPage from "./pages/MyPage";
 import AuthForm from "./components/AuthForm";
 import UserMenu from "./components/UserMenu";
 import API_BASE_URL from "./api";
+import "./App.css";
 
 function App() {
   const [email, setEmail] = useState("");
@@ -364,22 +365,27 @@ function App() {
   }, [isMyPage, loginUser]);
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Furima AI</h1>
+    <div className="app-container">
+      <header className="app-header">
+        <div>
+          <h1 className="app-logo">Furima AI</h1>
+          <p className="app-subtitle">AIとつくる、次世代フリマアプリ</p>
+        </div>
 
-      <nav style={{ marginBottom: "20px" }}>
-        <Link to="/" style={{ marginRight: "12px" }}>
-          ホーム
-        </Link>
-        <Link to="/sell" style={{ marginRight: "12px" }}>
-          出品
-        </Link>
-        <Link to="/mypage" style={{ marginRight: "12px" }}>
-          マイページ
-        </Link>
-      </nav>
+        <nav className="app-nav">
+          <Link to="/" className="nav-link">
+            ホーム
+          </Link>
+          <Link to="/sell" className="nav-link">
+            出品
+          </Link>
+          <Link to="/mypage" className="nav-link">
+            マイページ
+          </Link>
+        </nav>
+      </header>
 
-      <h2>{pageTitle}</h2>
+      <h2 className="page-title">{pageTitle}</h2>
 
       {loginUser ? (
         <div>
@@ -420,10 +426,10 @@ function App() {
         />
       )}
 
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
 
       {backendMessage && (
-        <div>
+        <div className="error-box">
           <h3>エラー詳細</h3>
           <pre>{backendMessage}</pre>
         </div>
