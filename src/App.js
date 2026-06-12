@@ -27,6 +27,8 @@ function App() {
   const [backendMessage, setBackendMessage] = useState("");
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productDetailLoading, setProductDetailLoading] = useState(false);
+  const [productDetailError, setProductDetailError] = useState("");
   const [newProductTitle, setNewProductTitle] = useState("");
   const [newProductDescription, setNewProductDescription] = useState("");
   const [newProductPrice, setNewProductPrice] = useState("");
@@ -89,17 +91,35 @@ function App() {
   useEffect(() => {
     const fetchProductDetail = async () => {
       if (!productDetailId) {
+        setSelectedProduct(null);
+        setProductDetailLoading(false);
+        setProductDetailError("");
         return;
       }
 
       try {
+        setSelectedProduct(null);
+        setProductDetailLoading(true);
+        setProductDetailError("");
+
         const response = await fetch(
           `${API_BASE_URL}/products/${productDetailId}`,
         );
         const data = await response.json();
+
+        if (!response.ok) {
+          setSelectedProduct(null);
+          setProductDetailError("商品が見つかりませんでした");
+          return;
+        }
+
         setSelectedProduct(data);
       } catch (error) {
         console.error(error);
+        setSelectedProduct(null);
+        setProductDetailError("商品詳細の取得に失敗しました");
+      } finally {
+        setProductDetailLoading(false);
       }
     };
 
@@ -453,14 +473,30 @@ function App() {
 
       {isHomePage && <HomePage products={products} />}
 
-      {isProductDetailPage && selectedProduct && (
-        <ProductDetailPage
-          selectedProduct={selectedProduct}
-          loginUser={loginUser}
-          currentUser={currentUser}
-          handlePurchaseProduct={handlePurchaseProduct}
-        />
+      {isProductDetailPage && productDetailLoading && (
+        <div className="loading-box">商品詳細を読み込み中です...</div>
       )}
+
+      {isProductDetailPage && !productDetailLoading && productDetailError && (
+        <div className="empty-state">
+          <p>{productDetailError}</p>
+          <Link to="/" className="mini-link">
+            商品一覧に戻る
+          </Link>
+        </div>
+      )}
+
+      {isProductDetailPage &&
+        !productDetailLoading &&
+        !productDetailError &&
+        selectedProduct && (
+          <ProductDetailPage
+            selectedProduct={selectedProduct}
+            loginUser={loginUser}
+            currentUser={currentUser}
+            handlePurchaseProduct={handlePurchaseProduct}
+          />
+        )}
     </div>
   );
 }
