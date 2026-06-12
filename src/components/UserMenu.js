@@ -1,11 +1,15 @@
 function UserMenu({ loginUser, handleLogout }) {
   return (
-    <div>
-      <p>ログイン中です</p>
-      <p>Email: {loginUser.email}</p>
+    <section className="user-menu">
+      <div className="user-menu-info">
+        <span className="user-status">ログイン中</span>
+        <p className="user-email">{loginUser.email}</p>
+      </div>
 
-      <button onClick={handleLogout}>ログアウト</button>
-    </div>
+      <button className="logout-button" onClick={handleLogout}>
+        ログアウト
+      </button>
+    </section>
   );
 }
 
