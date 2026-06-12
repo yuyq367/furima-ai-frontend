@@ -217,6 +217,16 @@ function App() {
         return;
       }
 
+      const confirmed = window.confirm(
+        `この内容で商品を出品しますか？\n\n商品名: ${newProductTitle}\n価格: ${Number(
+          newProductPrice,
+        ).toLocaleString()}円\nカテゴリ: ${newProductCategory}\n状態: ${newProductCondition}`,
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
       const idToken = await loginUser.getIdToken();
 
       const response = await fetch(`${API_BASE_URL}/products`, {
@@ -265,6 +275,12 @@ function App() {
 
       if (!loginUser) {
         setMessage("ログインしてください");
+        return;
+      }
+
+      const confirmed = window.confirm("本当にこの商品を購入しますか？");
+
+      if (!confirmed) {
         return;
       }
 
