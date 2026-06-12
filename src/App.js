@@ -38,6 +38,24 @@ function App() {
   const isMyPage = location.pathname === "/mypage";
   const isProductDetailPage = productDetailId !== null;
 
+  let pageTitle = "Furima AI";
+
+  if (isHomePage) {
+    pageTitle = "商品一覧";
+  }
+
+  if (isSellPage) {
+    pageTitle = "商品を出品する";
+  }
+
+  if (isMyPage) {
+    pageTitle = "マイページ";
+  }
+
+  if (isProductDetailPage) {
+    pageTitle = "商品詳細";
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setLoginUser(user);
@@ -389,7 +407,7 @@ function App() {
         </Link>
       </nav>
 
-      <h2>Firebase Authentication Test</h2>
+      <h2>{pageTitle}</h2>
 
       {loginUser ? (
         <div>
@@ -403,8 +421,6 @@ function App() {
           {isSellPage && (
             <>
               <hr />
-
-              <h2>商品を出品する</h2>
 
               <div>
                 <input
@@ -486,8 +502,6 @@ function App() {
           {isMyPage && (
             <>
               <hr />
-
-              <h2>マイページ</h2>
 
               <h3>自分の出品一覧</h3>
 
