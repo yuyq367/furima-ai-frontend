@@ -687,7 +687,7 @@ function App() {
         <div className="app-header-inner">
           <Link to="/" className="app-brand">
             <h1 className="app-logo">Furima AI</h1>
-            <p className="app-subtitle">AIとつくる、次世代フリマアプリ</p>
+            <p className="app-subtitle">AI機能搭載次世代フリマアプリ</p>
           </Link>
 
           <nav className="app-nav">
