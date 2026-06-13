@@ -27,6 +27,7 @@ function ProductDetailPage({
   currentUser,
   handlePurchaseProduct,
   handleUpdateProduct,
+  handleDeleteProduct,
 }) {
   const isSold = selectedProduct.status !== "available";
   const isOwnProduct =
@@ -73,6 +74,10 @@ function ProductDetailPage({
     if (success) {
       setIsEditing(false);
     }
+  };
+
+  const handleDeleteClick = async () => {
+    await handleDeleteProduct(selectedProduct.id, selectedProduct.title);
   };
 
   return (
@@ -242,12 +247,22 @@ function ProductDetailPage({
                     <p className="detail-notice">
                       これは自分が出品した商品です
                     </p>
-                    <button
-                      className="primary-action"
-                      onClick={handleStartEdit}
-                    >
-                      編集する
-                    </button>
+
+                    <div className="owner-detail-actions">
+                      <button
+                        className="primary-action"
+                        onClick={handleStartEdit}
+                      >
+                        編集する
+                      </button>
+
+                      <button
+                        className="danger-action"
+                        onClick={handleDeleteClick}
+                      >
+                        出品を取り消す
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <button

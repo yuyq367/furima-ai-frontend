@@ -2015,3 +2015,30 @@ hr {
     width: fit-content;
   }
 }
+
+.owner-detail-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.danger-action {
+  border: 1px solid #d8b6aa;
+  border-radius: 999px;
+  background: #fff5f1;
+  color: #9a4b35;
+  padding: 12px 20px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.danger-action:hover {
+  background: #ffe6dd;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(154, 75, 53, 0.14);
+}
