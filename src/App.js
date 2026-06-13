@@ -494,6 +494,59 @@ function App() {
     }
   };
 
+  const handleDeleteProduct = async (productId, productTitle) => {
+    try {
+      setMessage("");
+      setBackendMessage("");
+
+      if (!loginUser) {
+        setMessage("ログインしてください");
+        return false;
+      }
+
+      const confirmed = await openConfirmDialog({
+        title: "出品を取り消しますか？",
+        message: `「${productTitle}」の出品を取り消します。\nこの操作は取り消せません。`,
+        confirmLabel: "取り消す",
+        cancelLabel: "キャンセル",
+      });
+
+      if (!confirmed) {
+        return false;
+      }
+
+      const idToken = await loginUser.getIdToken();
+
+      const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBackendMessage(JSON.stringify(data, null, 2));
+        setMessage(data.detail || "出品の取り消しに失敗しました");
+        return false;
+      }
+
+      setSelectedProduct(null);
+      setMessage("出品を取り消しました");
+
+      await fetchProducts();
+      await handleGetMyPage();
+
+      navigate("/mypage");
+
+      return true;
+    } catch (error) {
+      setMessage(error.message);
+      return false;
+    }
+  };
+
   const handlePurchaseProduct = async (productId) => {
     try {
       setMessage("");
@@ -790,6 +843,7 @@ function App() {
               currentUser={currentUser}
               handlePurchaseProduct={handlePurchaseProduct}
               handleUpdateProduct={handleUpdateProduct}
+              handleDeleteProduct={handleDeleteProduct}
             />
           )}
 
