@@ -13,7 +13,7 @@ Furima AI は、商品の出品・購入・管理ができるフリマアプリ�
 ## 公開URL
 
 * Frontend: https://furima-ai-frontend.vercel.app
-* Backend: Cloud Run にデプロイ
+* Backend: https://furima-ai-backend-796764136746.us-central1.run.app
 
 ## 主な機能
 
@@ -154,7 +154,6 @@ OpenAI APIを利用して、商品情報から自然な商品説明文を生成�
 
 ## アーキテクチャ
 
-```text
 User
 ↓
 Vercel
@@ -169,7 +168,6 @@ MySQL Database
 FastAPI Backend
 ↓
 OpenAI API
-```
 
 ## 画面構成
 
@@ -184,33 +182,25 @@ OpenAI API
 
 ### Frontend
 
-```bash
 cd furima-ai-frontend
 nvm use 20
 npm install
 npm start
-```
 
 ローカルでは以下のURLで起動します。
 
-```text
 http://localhost:3000
-```
 
 ### Backend
 
-```bash
 cd furima-ai-backend
 source .venv/bin/activate
 pip install -r requirements.txt
 python -m uvicorn app.main:app
-```
 
 ローカルでは以下のURLで起動します。
 
-```text
 http://127.0.0.1:8000
-```
 
 ## 環境変数
 
@@ -218,7 +208,6 @@ http://127.0.0.1:8000
 
 ローカル環境では `.env` に以下を設定します。
 
-```env
 REACT_APP_API_BASE_URL=http://127.0.0.1:8000
 
 REACT_APP_API_KEY=
@@ -227,11 +216,9 @@ REACT_APP_PROJECT_ID=
 REACT_APP_STORAGE_BUCKET=
 REACT_APP_MESSAGING_SENDER_ID=
 REACT_APP_APP_ID=
-```
 
 Vercelでは以下を設定します。
 
-```env
 REACT_APP_API_BASE_URL=Cloud Run のURL
 
 REACT_APP_API_KEY=
@@ -242,13 +229,11 @@ REACT_APP_MESSAGING_SENDER_ID=
 REACT_APP_APP_ID=
 
 CI=false
-```
 
 ### Backend
 
 ローカル環境では `.env` に以下を設定します。
 
-```env
 DB_HOST=
 DB_PORT=3306
 DB_NAME=furima_ai
@@ -259,11 +244,9 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
 
 FIREBASE_PROJECT_ID=
-```
 
 Cloud Runでは以下を環境変数として設定します。
 
-```env
 DB_NAME=furima_ai
 DB_USER=
 DB_PASSWORD=
@@ -273,7 +256,6 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
 
 FIREBASE_PROJECT_ID=
-```
 
 ## デプロイ
 
