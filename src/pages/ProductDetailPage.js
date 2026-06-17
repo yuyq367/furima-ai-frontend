@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function formatDateTime(dateTimeText) {
   if (!dateTimeText) {
@@ -29,6 +29,7 @@ function ProductDetailPage({
   handleUpdateProduct,
   handleDeleteProduct,
 }) {
+  const navigate = useNavigate();
   const isSold = selectedProduct.status !== "available";
   const isOwnProduct =
     loginUser && currentUser && selectedProduct.seller_id === currentUser.id;
@@ -273,9 +274,13 @@ function ProductDetailPage({
                   </button>
                 )}
 
-                <Link to="/" className="back-link">
-                  商品一覧に戻る
-                </Link>
+                <button
+                  type="button"
+                  className="secondary-action"
+                  onClick={() => navigate(-1)}
+                >
+                  前の画面に戻る
+                </button>
               </div>
             </>
           )}

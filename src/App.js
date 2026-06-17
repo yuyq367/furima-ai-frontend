@@ -16,6 +16,7 @@ import AuthForm from "./components/AuthForm";
 import ConfirmDialog from "./components/ConfirmDialog";
 import API_BASE_URL from "./api";
 import "./App.css";
+import AiRecommendPage from "./pages/AiRecommendPage";
 
 function App() {
   const [email, setEmail] = useState("");
@@ -45,6 +46,12 @@ function App() {
   const [myPageLoading, setMyPageLoading] = useState(false);
   const [myPageError, setMyPageError] = useState("");
 
+  const [aiRecommendQuery, setAiRecommendQuery] = useState("");
+  const [aiRecommendMessage, setAiRecommendMessage] = useState("");
+  const [aiRecommendedProducts, setAiRecommendedProducts] = useState([]);
+  const [aiRecommendLoading, setAiRecommendLoading] = useState(false);
+  const [aiRecommendError, setAiRecommendError] = useState("");
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -53,6 +60,7 @@ function App() {
 
   const isHomePage = location.pathname === "/";
   const isSellPage = location.pathname === "/sell";
+  const isAiRecommendPage = location.pathname === "/ai-recommend";
   const isMyPage = location.pathname === "/mypage";
   const isLoginPage = location.pathname === "/login";
   const isProductDetailPage = productDetailId !== null;
@@ -65,6 +73,10 @@ function App() {
 
   if (isSellPage) {
     pageTitle = "商品を出品する";
+  }
+
+  if (isAiRecommendPage) {
+    pageTitle = "AIレコメンド";
   }
 
   if (isMyPage) {
@@ -673,6 +685,51 @@ function App() {
     }
   };
 
+  const handleAiRecommend = async (query) => {
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery) {
+      setAiRecommendError("探したい商品の条件を入力してください");
+      setAiRecommendMessage("");
+      setAiRecommendedProducts([]);
+      return;
+    }
+
+    try {
+      setAiRecommendLoading(true);
+      setAiRecommendError("");
+      setAiRecommendMessage("");
+      setAiRecommendedProducts([]);
+
+      const response = await fetch(
+        `${API_BASE_URL}/ai/product-recommendations`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: trimmedQuery,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setAiRecommendError(data.detail || "AIレコメンドの取得に失敗しました");
+        return;
+      }
+
+      setAiRecommendMessage(data.message || "おすすめ商品を表示します。");
+      setAiRecommendedProducts(data.products || []);
+    } catch (error) {
+      setAiRecommendError(error.message);
+    } finally {
+      setAiRecommendLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isMyPage || !loginUser) {
       return;
@@ -703,6 +760,13 @@ function App() {
               className={`nav-link ${isSellPage ? "nav-link-active" : ""}`}
             >
               出品
+            </Link>
+
+            <Link
+              to="/ai-recommend"
+              className={`nav-link ${isAiRecommendPage ? "nav-link-active" : ""}`}
+            >
+              ✨ AI
             </Link>
 
             {loginUser ? (
@@ -802,6 +866,18 @@ function App() {
               </Link>
             </div>
           ))}
+
+        {isAiRecommendPage && (
+          <AiRecommendPage
+            query={aiRecommendQuery}
+            setQuery={setAiRecommendQuery}
+            aiMessage={aiRecommendMessage}
+            recommendedProducts={aiRecommendedProducts}
+            isLoading={aiRecommendLoading}
+            errorMessage={aiRecommendError}
+            handleAiRecommend={handleAiRecommend}
+          />
+        )}
 
         {message && <p className="message">{message}</p>}
 
