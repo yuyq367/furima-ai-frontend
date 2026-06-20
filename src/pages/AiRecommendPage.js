@@ -87,8 +87,23 @@ function AiRecommendPage({
           </div>
 
           <div className="product-grid">
-            {recommendedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {recommendedProducts.map((product, index) => (
+              <div className="ai-ranked-product-card" key={product.id}>
+                <div className="ai-rank-badge">
+                  👑 {product.recommendation_rank || index + 1}位
+                </div>
+
+                <ProductCard product={product} />
+
+                {product.recommendation_reason && (
+                  <div className="ai-recommend-reason">
+                    <p className="ai-recommend-reason-title">
+                      AIのおすすめ理由
+                    </p>
+                    <p>{product.recommendation_reason}</p>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </section>

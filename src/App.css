@@ -2253,3 +2253,49 @@ hr {
 .ai-recommend-results p {
   font-size: 0.96rem;
 }
+
+.ai-ranked-product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ai-rank-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  border-radius: 999px;
+  background: rgba(49, 47, 45, 0.9);
+  color: #fffaf4;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(49, 47, 45, 0.22);
+  pointer-events: none;
+}
+
+.ai-recommend-reason {
+  border: 1px solid rgba(63, 60, 57, 0.1);
+  border-radius: 18px;
+  background: #fffaf4;
+  padding: 14px 16px;
+  color: #3f3c39;
+  box-shadow: 0 10px 24px rgba(63, 60, 57, 0.06);
+}
+
+.ai-recommend-reason-title {
+  margin: 0 0 6px;
+  font-size: 0.86rem;
+  font-weight: 900;
+  color: #312f2d;
+}
+
+.ai-recommend-reason p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #68635f;
+}
