@@ -1163,6 +1163,7 @@ body {
   color: #5f574e;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .product-card-footer {
@@ -1530,6 +1531,7 @@ select:focus {
   font-weight: 900;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .product-price {
