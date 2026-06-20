@@ -736,6 +736,7 @@ function App() {
     }
 
     handleGetMyPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMyPage, loginUser]);
 
   return (
