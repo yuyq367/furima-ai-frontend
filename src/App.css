@@ -2299,3 +2299,31 @@ hr {
   line-height: 1.7;
   color: #68635f;
 }
+
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-shuffle-button {
+  border: 1px solid rgba(63, 60, 57, 0.14);
+  border-radius: 999px;
+  background: #3f3c39;
+  color: #fffaf4;
+  padding: 10px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.filter-shuffle-button:hover {
+  background: #34312f;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(63, 60, 57, 0.14);
+}

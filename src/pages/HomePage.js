@@ -21,15 +21,30 @@ function toSearchText(value) {
   return String(value ?? "").toLowerCase();
 }
 
+function shuffleProducts(productsToShuffle) {
+  const shuffledProducts = [...productsToShuffle];
+
+  for (let index = shuffledProducts.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+
+    [shuffledProducts[index], shuffledProducts[randomIndex]] = [
+      shuffledProducts[randomIndex],
+      shuffledProducts[index],
+    ];
+  }
+
+  return shuffledProducts;
+}
+
 function HomePage({ products, productsLoading, productsError }) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-
+  const [shuffleSeed, setShuffleSeed] = useState(0);
   const filteredProducts = useMemo(() => {
     const keyword = searchKeyword.trim().toLowerCase();
 
-    return products.filter((product) => {
+    const matchedProducts = products.filter((product) => {
       const searchableTexts = [
         product.title,
         product.description,
@@ -49,7 +64,13 @@ function HomePage({ products, productsLoading, productsError }) {
 
       return matchesKeyword && matchesCategory && matchesStatus;
     });
-  }, [products, searchKeyword, selectedCategory, selectedStatus]);
+
+    if (shuffleSeed === 0) {
+      return matchedProducts;
+    }
+
+    return shuffleProducts(matchedProducts);
+  }, [products, searchKeyword, selectedCategory, selectedStatus, shuffleSeed]);
 
   const hasActiveFilter =
     searchKeyword !== "" || selectedCategory !== "" || selectedStatus !== "";
@@ -58,6 +79,10 @@ function HomePage({ products, productsLoading, productsError }) {
     setSearchKeyword("");
     setSelectedCategory("");
     setSelectedStatus("");
+  };
+
+  const handleShuffleProducts = () => {
+    setShuffleSeed((currentSeed) => currentSeed + 1);
   };
 
   return (
@@ -69,14 +94,23 @@ function HomePage({ products, productsLoading, productsError }) {
             <p>キーワードやカテゴリで商品を絞り込めます。</p>
           </div>
 
-          {hasActiveFilter && (
+          <div className="filter-actions">
             <button
-              className="filter-clear-button"
-              onClick={handleClearFilters}
+              className="filter-shuffle-button"
+              onClick={handleShuffleProducts}
             >
-              条件をリセット
+              商品をシャッフル
             </button>
-          )}
+
+            {hasActiveFilter && (
+              <button
+                className="filter-clear-button"
+                onClick={handleClearFilters}
+              >
+                条件をリセット
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="filter-grid">
